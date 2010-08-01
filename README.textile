@@ -68,10 +68,10 @@ And this will disable output entirely:
 Test::Unit::UI::Console::TestRunner.set_test_benchmark_limits(0, 0)
 </code></pre>
 
+h2. #Newly Added Feature:
+h3. Option to fail the build based on the set threshold limit on benchmarks. 
 
-h2. Option to fail the build based on the set threshold limit on benchmarks (New feature added)
-
-This option is newly added to this gem in order to fail the build if one of the top 15 slowest test's benchmark shows a result of exceeding the maximum time(threshold) that a test can take to run.
+This option is newly added to this gem in order to fail the build if one of the top 15 slowest test's benchmarks shows a result of exceeding the maximum time(threshold) that a test can take to run.
 
 In order to fail the build based on threshold, First, we need to set the maximum time (in seconds) that any test can take to complete by putting this line in your test_helper.rb file.
   
