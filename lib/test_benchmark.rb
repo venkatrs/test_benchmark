@@ -7,16 +7,19 @@ require 'fileutils'
 class Test::Unit::UI::Console::TestRunner
   DEFAULT_DISPLAY_LIMIT = 15
   DEFAULT_SUITE_DISPLAY_LIMIT = 5
-  #needs to be refactored to be fetched from ENV[]
-  BENCHMARK_FILE = "./log/test_benchmark.txt"
-  THRESHOLD_IN_SECONDS = 2
 
   @@display_limit = DEFAULT_DISPLAY_LIMIT
   @@suite_display_limit = DEFAULT_SUITE_DISPLAY_LIMIT
+  @@threshold_in_seconds = nil 
 
   def self.set_test_benchmark_limits(set_display_limit=DEFAULT_DISPLAY_LIMIT, set_suite_display_limit=DEFAULT_SUITE_DISPLAY_LIMIT)
     @@display_limit = set_display_limit
     @@suite_display_limit = set_suite_display_limit
+  end
+
+  def self.capture_benchmarks_from_display_exceeding(max_time_in_secs)
+    @@threshold_in_seconds = max_time_in_secs
+    reset_benchmarks_capture_file("./log/test_benchmark.txt") 
   end
 
   alias attach_to_mediator_old attach_to_mediator
@@ -45,7 +48,6 @@ class Test::Unit::UI::Console::TestRunner
     started_old(result)
     @test_benchmarks = {} 
     @suite_benchmarks = {}
-    touch_benchmark_file 
   end
 
   alias finished_old finished
@@ -129,13 +131,15 @@ class Test::Unit::UI::Console::TestRunner
   def output_benchmarks(suite_name=nil)
     benchmarks = prep_benchmarks(suite_name)
     return if benchmarks.nil? || benchmarks.empty?
-    record_benchmarks_that_exceeds_threshold(suite_name, benchmarks) if suite_name
+    if @@threshold_in_seconds 
+      record_benchmarks_that_exceeds_threshold(suite_name, benchmarks) if suite_name
+    end
     output(header(suite_name) + benchmarks.join("\n") + "\n")
   end
 
 
   def benchmarks_exceeding_threshold(benchmarks)
-    benchmarks.select { |element| THRESHOLD_IN_SECONDS <= element.split[0].to_i }
+    benchmarks.select { |element| element.split[0].to_i >= @@threshold_in_seconds }
   end
 
   def record_benchmarks_that_exceeds_threshold(suite_name, benchmarks)
@@ -146,9 +150,9 @@ class Test::Unit::UI::Console::TestRunner
     end
   end
 
-  def touch_benchmark_file
-    FileUtils.rm_rf BENCHMARK_FILE
-    FileUtils.touch BENCHMARK_FILE
+  def reset_benchmarks_capture_file(file_path)
+    FileUtils.rm_rf file_path
+    FileUtils.touch file_path
   end
 
 end
