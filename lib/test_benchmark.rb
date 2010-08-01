@@ -139,10 +139,10 @@ class Test::Unit::UI::Console::TestRunner
   end
 
   def record_benchmarks_that_exceeds_threshold(suite_name, benchmarks)
-    botherings = benchmarks_exceeding_threshold(benchmarks)
-    return if botherings.nil? || botherings.empty?
+    failed_benchmarks = benchmarks_exceeding_threshold(benchmarks)
+    return if failed_benchmarks.nil? || failed_benchmarks.empty?
     File.open(BENCHMARK_FILE, 'a') do |file|
-      file << "\nTests that ran more than #{THRESHOLD_IN_SECONDS} secs:\n"+ botherings.join("\n") + "\n"
+      file << "\nTests that ran more than #{THRESHOLD_IN_SECONDS} secs:\n"+ failed_benchmarks.join("\n") + "\n"
     end
   end
 
