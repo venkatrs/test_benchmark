@@ -7,7 +7,8 @@ require 'fileutils'
 class Test::Unit::UI::Console::TestRunner
   DEFAULT_DISPLAY_LIMIT = 15
   DEFAULT_SUITE_DISPLAY_LIMIT = 5
-
+  BENCHMARK_FILE = "./log/test_benchmark.txt"
+  
   @@display_limit = DEFAULT_DISPLAY_LIMIT
   @@suite_display_limit = DEFAULT_SUITE_DISPLAY_LIMIT
   @@threshold_in_seconds = nil 
@@ -19,7 +20,7 @@ class Test::Unit::UI::Console::TestRunner
 
   def self.capture_benchmarks_from_display_exceeding(max_time_in_secs)
     @@threshold_in_seconds = max_time_in_secs
-    reset_benchmarks_capture_file("./log/test_benchmark.txt") 
+    reset_benchmarks_capture_file 
   end
 
   alias attach_to_mediator_old attach_to_mediator
@@ -146,13 +147,13 @@ class Test::Unit::UI::Console::TestRunner
     failed_benchmarks = benchmarks_exceeding_threshold(benchmarks)
     return if failed_benchmarks.nil? || failed_benchmarks.empty?
     File.open(BENCHMARK_FILE, 'a') do |file|
-      file << "\nTests that ran more than #{THRESHOLD_IN_SECONDS} secs:\n"+ failed_benchmarks.join("\n") + "\n"
+      file << "\nTests that ran more than #{@@threshold_in_seconds} secs:\n"+ failed_benchmarks.join("\n") + "\n"
     end
   end
 
-  def reset_benchmarks_capture_file(file_path)
-    FileUtils.rm_rf file_path
-    FileUtils.touch file_path
+  def self.reset_benchmarks_capture_file
+    FileUtils.rm_rf BENCHMARK_FILE 
+    FileUtils.touch BENCHMARK_FILE  
   end
 
 end
