@@ -69,4 +69,35 @@ Test::Unit::UI::Console::TestRunner.set_test_benchmark_limits(0, 0)
 </code></pre>
 
 
+h2. Option to fail the build based on the set threshold limit on benchmarks (New feature added)
+
+This option is newly added to this gem in order to fail the build if one of the top 15 slowest test's benchmark shows a result of exceeding the maximum time(threshold) that a test can take to run.
+
+In order to fail the build based on threshold, First, we need to set the maximum time (in seconds) that any test can take to complete by putting this line in your test_helper.rb file.
   
+Sample:
+
+<pre><code>
+Test::Unit::UI::Console::TestRunner.capture_benchmarks_from_display_exceeding(2) # 2 -> max_time_in_seconds
+</code></pre>
+
+Then in the rake file, add a task something like the following and invoke this task as the last target (after invoking all the test targets) as part of the regular build. 
+
+Sample:
+
+<pre><code>
+require 'fileutils'
+namespace :benchmark do
+  desc "Make sure that the benchmarks are within set threshold limits"
+  task :validate do
+    unless File.zero?("./log/test_benchmark.txt")
+      puts "Error: Failed Benchmark Test. Details are as follows:" 
+      benchmark_file = File.open("./log/test_benchmark.txt", 'r') 
+      benchmark_file.each { |line| puts line }
+      exit 1
+    end
+    puts "Benchmarking of tests done successfully!"
+  end
+end
+</code></pre>
+
