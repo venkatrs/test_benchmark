@@ -8,7 +8,7 @@ class Test::Unit::UI::Console::TestRunner
   DEFAULT_DISPLAY_LIMIT = 15
   DEFAULT_SUITE_DISPLAY_LIMIT = 5
   #needs to be refactored to be fetched from ENV[]
-  BENCHMARK_FILE = "benchmark.txt"
+  BENCHMARK_FILE = "./log/test_benchmark.txt"
   THRESHOLD_IN_SECONDS = 2
 
   @@display_limit = DEFAULT_DISPLAY_LIMIT
@@ -45,7 +45,7 @@ class Test::Unit::UI::Console::TestRunner
     started_old(result)
     @test_benchmarks = {} 
     @suite_benchmarks = {}
-    FileUtils.rm_rf BENCHMARK_FILE
+    touch_benchmark_file 
   end
 
   alias finished_old finished
@@ -144,6 +144,11 @@ class Test::Unit::UI::Console::TestRunner
     File.open(BENCHMARK_FILE, 'a') do |file|
       file << "\nTests that ran more than #{THRESHOLD_IN_SECONDS} secs:\n"+ failed_benchmarks.join("\n") + "\n"
     end
+  end
+
+  def touch_benchmark_file
+    FileUtils.rm_rf BENCHMARK_FILE
+    FileUtils.touch BENCHMARK_FILE
   end
 
 end
