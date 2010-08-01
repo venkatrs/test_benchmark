@@ -69,6 +69,7 @@ Test::Unit::UI::Console::TestRunner.set_test_benchmark_limits(0, 0)
 </code></pre>
 
 h2. #Newly Added Feature:
+
 h3. Option to fail the build based on the set threshold limit on benchmarks. 
 
 This option is newly added to this gem in order to fail the build if one of the top 15 slowest test's benchmarks shows a result of exceeding the maximum time(threshold) that a test can take to run.
